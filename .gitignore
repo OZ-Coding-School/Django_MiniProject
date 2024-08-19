@@ -1,0 +1,8 @@
+.python-version
+migrations/
+secret.json
+*.env
+.git/
+.venv/
+.idea/
+
