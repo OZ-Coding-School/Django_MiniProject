@@ -13,13 +13,7 @@ try:
 except FileNotFoundError:
     SECRET = {
         "DJANGO_SECRET_KEY": random.choices("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?"),
-        "POSTGRES": {
-            "HOST": "localhost",
-            "USER": "postgres",
-            "PASSWORD": "postgres",
-            "NAME": "django",
-            "PORT": 5432
-        }
+        "POSTGRES": {"HOST": "localhost", "USER": "postgres", "PASSWORD": "postgres", "NAME": "django", "PORT": 5432},
     }
 
 SECRET_KEY = SECRET["DJANGO_SECRET_KEY"]
