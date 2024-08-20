@@ -5,4 +5,5 @@ secret.json
 .git/
 .venv/
 .idea/
-
+__pycache__/
+poetry.lock
