@@ -1,0 +1,63 @@
+name: Django Mini Project CI
+
+# 코드가 main 브랜치에 푸시되거나 풀 리퀘스트가 생성될 때 CI가 실행됩니다.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+        options: >-
+          --health-cmd "pg_isready -U ${{ secrets.DB_USER }}"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "${HOME}/.local/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: |
+        poetry install
+
+    - name: Run isort (Import sorting)
+      run: |
+        poetry run isort . --check --diff
+
+    - name: Run black (Code formatting)
+      run: |
+        poetry run black . --check
+
+    - name: Wait for PostgreSQL
+      run: |
+        until pg_isready -h ${{ secrets.DB_HOST }} -p ${{ secrets.DB_PORT }} -U ${{ secrets.DB_USER }}; do
+          sleep 1
+        done
+
+    - name: Run Django tests
+      run: |
+        poetry run python manage.py test
