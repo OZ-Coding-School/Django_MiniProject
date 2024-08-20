@@ -1,13 +1,26 @@
 import json
+import random
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # 환경변수 가져오기
-with open(BASE_DIR / "secret.json") as f:
-    config_secret_str = f.read()
-
-SECRET = json.loads(config_secret_str)
+try:
+    with open(BASE_DIR / "secret.json") as f:
+        config_secret_str = f.read()
+    SECRET = json.loads(config_secret_str)
+# CI 용
+except FileNotFoundError:
+    SECRET = {
+        "DJANGO_SECRET_KEY": random.choices("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?"),
+        "POSTGRES": {
+            "HOST": "localhost",
+            "USER": "postgres",
+            "PASSWORD": "postgres",
+            "NAME": "django",
+            "PORT": 5432
+        }
+    }
 
 SECRET_KEY = SECRET["DJANGO_SECRET_KEY"]
 

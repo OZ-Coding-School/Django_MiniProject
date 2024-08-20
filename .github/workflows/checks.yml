@@ -6,13 +6,6 @@ on:
       - main
   pull_request:
 
-env:
-  POSTGRES_DB: ${{ secrets.DB_NAME }}
-  POSTGRES_USER: ${{ secrets.DB_USER }}
-  POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  POSTGRES_PORT: ${{ secrets.DB_PORT }}
-  POSTGRES_HOST: ${{ secrets.DB_HOST }}
-
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -23,11 +16,9 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
-          POSTGRES_PORT: ${{ env.POSTGRES_PORT }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: django
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -67,7 +58,7 @@ jobs:
 
     - name: Wait for PostgreSQL
       run: |
-        until pg_isready -h ${{ env.POSTGRES_HOST }} -p ${{ env.POSTGRES_PORT }} -U ${{ env.POSTGRES_USER }}; do
+        until pg_isready -h localhost -p 5432 -U postgres; do
           sleep 1
         done
 
