@@ -7,7 +7,17 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+django = "^5.1"
+django-restframework = "^0.0.1"
+django-extensions = "^3.2.3"
+setuptools = "^72.2.0"
+psycopg2 = "^2.9.9"
 
+
+[tool.poetry.group.dev.dependencies]
+drf-yasg = "^1.21.7"
+black = "^24.8.0"
+isort = "^5.13.2"
 
 [build-system]
 requires = ["poetry-core"]
