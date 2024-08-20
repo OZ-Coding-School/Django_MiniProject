@@ -1,32 +1,32 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # 환경변수 가져오기
-with open(BASE_DIR / 'secret.json') as f:
+with open(BASE_DIR / "secret.json") as f:
     config_secret_str = f.read()
 
 SECRET = json.loads(config_secret_str)
 
-SECRET_KEY = SECRET['DJANGO_SECRET_KEY']
+SECRET_KEY = SECRET["DJANGO_SECRET_KEY"]
 
 # Application definition
 # installed app
 DJANGO_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 ]
 
 CUSTOM_APPS = []
 
 THIRD_PARTY_APPS = [
-    'django_extensions',
-    'rest_framework',
+    "django_extensions",
+    "rest_framework",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + CUSTOM_APPS + THIRD_PARTY_APPS
