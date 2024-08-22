@@ -1,5 +1,4 @@
 .python-version
-migrations/
 secret.json
 *.env
 .git/
