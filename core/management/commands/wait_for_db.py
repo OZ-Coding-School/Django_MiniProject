@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for i in range(10):
-            self.stdout.write(f'Try {i}: Waiting for database...')
+            self.stdout.write(f'Try {i+1}: Waiting for database...')
             try:
                 connection = connections['default']
                 if connection:
@@ -18,6 +18,7 @@ class Command(BaseCommand):
                     return
             except (Psycopg2OpError, OperationalError):
                 if i == 9:
-                    self.stdout.write(self.style.FAIL(f"PostgreSQL Connection Failed after {i+1} attempts"))
-                self.stdout.write(self.style.FAIL("PostgreSQL Connection Failed! Connection Retrying..."))
+                    self.stdout.write(self.style.ERROR(f"PostgreSQL Connection Failed after {i+1} attempts"))
+                else:
+                    self.stdout.write(self.style.ERROR("PostgreSQL Connection Failed! Connection Retrying..."))
                 time.sleep(1)
