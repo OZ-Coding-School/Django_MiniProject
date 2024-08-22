@@ -58,9 +58,7 @@ jobs:
 
     - name: Wait for PostgreSQL
       run: |
-        until pg_isready -h localhost -p 5432 -U postgres; do
-          sleep 1
-        done
+        poetry run python manage.py wait_for_db
 
     - name: Run Django Migration
       run: |
