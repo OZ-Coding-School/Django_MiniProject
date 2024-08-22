@@ -1,8 +1,8 @@
 from datetime import datetime
-
 from django.test import TestCase
-
 from django.contrib.auth import get_user_model
+from accounts.models import Account
+from transactions.models import Transaction
 
 
 class TransactionTestCase(TestCase):
@@ -24,11 +24,10 @@ class TransactionTestCase(TestCase):
         self.transaction_data = {
             'account_id': self.account.id,
             'trans_amount': 18000,
-            'after_balance': 982000,
-            'print_content': '자동이체',
+            'print_content': '유튜브 정기결제',
             'trans_type': '출금',
-            'trans_method': '유튜브 정기결제',
-            'trans_date': datetime.now(),
+            'trans_method': '자동이체',
+            'trans_date': datetime.now().date(),
             'trans_time': datetime.now().time()
         }
 
@@ -37,7 +36,7 @@ class TransactionTestCase(TestCase):
 
         self.assertEqual(transaction.account_id, self.transaction_data['account_id'])
         self.assertEqual(transaction.trans_amount, self.transaction_data['trans_amount'])
-        self.assertEqual(transaction.after_balance, self.transaction_data['after_balance'])
+        self.assertEqual(transaction.after_balance, self.account.balance - self.transaction_data['trans_amount'])
         self.assertEqual(transaction.print_content, self.transaction_data['print_content'])
         self.assertEqual(transaction.trans_type, self.transaction_data['trans_type'])
         self.assertEqual(transaction.trans_method, self.transaction_data['trans_method'])
