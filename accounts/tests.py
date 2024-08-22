@@ -1,6 +1,6 @@
 from django.test import TestCase
-
 from django.contrib.auth import get_user_model
+from accounts.models import Account
 
 
 class AccountModelTestCases(TestCase):
@@ -56,3 +56,13 @@ class AccountModelTestCases(TestCase):
 
         self.assertFalse(Account.objects.filter(id=account.id).exists())
         self.assertEqual(Account.objects.count(), 0)
+
+    def test_account_str_representation(self):
+        account = Account.objects.create(**self.account_data)
+
+        self.assertEqual(str(account), f"{account.get_bank_code_display()}: {account.account_num[-4:]}")
+
+    def test_account_masking_account_num(self):
+        account = Account.objects.create(**self.account_data)
+
+        self.assertEqual(account.masking_account_num(), "3333-54-*******")
