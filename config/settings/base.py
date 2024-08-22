@@ -30,9 +30,9 @@ DJANGO_APPS = [
 ]
 
 CUSTOM_APPS = [
-    'users',
-    'accounts',
-    'transactions',
+    "users",
+    "accounts",
+    "transactions",
 ]
 
 THIRD_PARTY_APPS = [

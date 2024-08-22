@@ -1,6 +1,8 @@
 from datetime import datetime
-from django.test import TestCase
+
 from django.contrib.auth import get_user_model
+from django.test import TestCase
+
 from accounts.models import Account
 from transactions.models import Transaction
 
@@ -15,33 +17,29 @@ class TransactionTestCase(TestCase):
             phone="010-1111-2222",
         )
         self.account = Account.objects.create(
-            user_id=self.user.id,
-            account_num='3333-54-1231231',
-            bank_code='090',
-            balance=1000000,
-            type='입출금통장'
+            user_id=self.user.id, account_num="3333-54-1231231", bank_code="090", balance=1000000, type="입출금통장"
         )
         self.transaction_data = {
-            'account_id': self.account.id,
-            'trans_amount': 18000,
-            'print_content': '유튜브 정기결제',
-            'trans_type': '출금',
-            'trans_method': '자동이체',
-            'trans_date': datetime.now().date(),
-            'trans_time': datetime.now().time()
+            "account_id": self.account.id,
+            "trans_amount": 18000,
+            "print_content": "유튜브 정기결제",
+            "trans_type": "출금",
+            "trans_method": "자동이체",
+            "trans_date": datetime.now().date(),
+            "trans_time": datetime.now().time(),
         }
 
     def test_transaction_create(self):
         transaction = Transaction.objects.create(**self.transaction_data)
 
-        self.assertEqual(transaction.account_id, self.transaction_data['account_id'])
-        self.assertEqual(transaction.trans_amount, self.transaction_data['trans_amount'])
-        self.assertEqual(transaction.after_balance, self.account.balance - self.transaction_data['trans_amount'])
-        self.assertEqual(transaction.print_content, self.transaction_data['print_content'])
-        self.assertEqual(transaction.trans_type, self.transaction_data['trans_type'])
-        self.assertEqual(transaction.trans_method, self.transaction_data['trans_method'])
-        self.assertEqual(transaction.trans_date, self.transaction_data['trans_date'])
-        self.assertEqual(transaction.trans_time, self.transaction_data['trans_time'])
+        self.assertEqual(transaction.account_id, self.transaction_data["account_id"])
+        self.assertEqual(transaction.trans_amount, self.transaction_data["trans_amount"])
+        self.assertEqual(transaction.after_balance, self.account.balance - self.transaction_data["trans_amount"])
+        self.assertEqual(transaction.print_content, self.transaction_data["print_content"])
+        self.assertEqual(transaction.trans_type, self.transaction_data["trans_type"])
+        self.assertEqual(transaction.trans_method, self.transaction_data["trans_method"])
+        self.assertEqual(transaction.trans_date, self.transaction_data["trans_date"])
+        self.assertEqual(transaction.trans_time, self.transaction_data["trans_time"])
 
     def test_transaction_update(self):
         transaction = Transaction.objects.create(**self.transaction_data)

@@ -1,9 +1,10 @@
 from django.db import models
-from config.constants import TRANSACTION_TYPE, TRANSACTION_METHOD
+
+from config.constants import TRANSACTION_METHOD, TRANSACTION_TYPE
 
 
 class Transaction(models.Model):
-    account = models.ForeignKey('accounts.Account', on_delete=models.CASCADE, related_name='transactions')
+    account = models.ForeignKey("accounts.Account", on_delete=models.CASCADE, related_name="transactions")
     trans_amount = models.IntegerField()
     after_balance = models.IntegerField()
     print_content = models.CharField(max_length=100)
@@ -22,7 +23,7 @@ class Transaction(models.Model):
         if self.trans_amount < 10:
             raise ValueError("거래금액은 원화 최소 단위인 10원보다 커야합니다.")
 
-        if self.get_trans_type_display() == '출금' and self.trans_amount > self.account.balance:
+        if self.get_trans_type_display() == "출금" and self.trans_amount > self.account.balance:
             raise ValueError("계좌 잔액보다 큰 금액은 출금할 수 없습니다.")
 
     def set_after_balance(self):
@@ -34,9 +35,9 @@ class Transaction(models.Model):
 
         trans_type = self.get_trans_type_display()
 
-        if trans_type == '입금':
+        if trans_type == "입금":
             self.after_balance = self.account.balance + self.trans_amount
-        elif trans_type == '출금':
+        elif trans_type == "출금":
             self.after_balance = self.account.balance - self.trans_amount
 
     def save(self, *args, **kwargs):
