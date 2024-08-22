@@ -33,6 +33,7 @@ CUSTOM_APPS = [
     "users",
     "accounts",
     "transactions",
+    "core",
 ]
 
 THIRD_PARTY_APPS = [
