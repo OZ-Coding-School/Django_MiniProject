@@ -159,7 +159,6 @@ class UserViewTestCase(APITestCase):
 
         # 응답 상태 코드 확인 (400 Bad Request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        print(response.data)
 
         # 오류 메시지가 올바른지 확인
         self.assertIn('email', response.data)
