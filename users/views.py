@@ -1,14 +1,15 @@
+from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
 from django.core.mail import send_mail
-from django.core.signing import TimestampSigner, SignatureExpired
+from django.core.signing import SignatureExpired, TimestampSigner
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, get_object_or_404
-from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate, get_user_model
-from users.serializers import SignupSerializer, LoginSerializer
+
+from users.serializers import LoginSerializer, SignupSerializer
 
 User = get_user_model()
 
@@ -25,9 +26,7 @@ class SignupView(CreateAPIView):
         signed_user_email = signer.sign(user.email)
         signer_dump = signing.dumps(signed_user_email)
 
-        self.verify_link = self.request.build_absolute_uri(
-            f"/users/verify/?code={signer_dump}"
-        )
+        self.verify_link = self.request.build_absolute_uri(f"/users/verify/?code={signer_dump}")
         subject = f"[Finance Manager]{user.email}님의 이메일 인증 링크입니다."
         message = f"""
                     아래의 링크를 클릭하여 이메일 인증을 완료해주세요.\n\n
@@ -43,7 +42,7 @@ class SignupView(CreateAPIView):
 
 
 def verify_email(request):
-    code = request.GET.get('code', '')
+    code = request.GET.get("code", "")
 
     signer = TimestampSigner()
     try:
@@ -62,20 +61,18 @@ class JWTLoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
+        email = request.data.get("email")
+        password = request.data.get("password")
         serializer = LoginSerializer(data={"email": email, "password": password})
 
         if serializer.is_valid():
-            user = authenticate(
-                request, email=serializer.data['email'], password=serializer.data['password']
-            )
+            user = authenticate(request, email=serializer.data["email"], password=serializer.data["password"])
             if user is None:
                 return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
             refresh = RefreshToken.for_user(user)
             response = Response({"detail": "Login successful"}, status.HTTP_200_OK)
-            response.set_cookie('access', str(refresh))
-            response.set_cookie('refresh', str(refresh.access_token))
+            response.set_cookie("access", str(refresh))
+            response.set_cookie("refresh", str(refresh.access_token))
             return response
         return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -83,8 +80,8 @@ class JWTLoginView(APIView):
 class JWTLogoutView(APIView):
     def post(self, request):
         response = Response()
-        response.delete_cookie('access')
-        response.delete_cookie('refresh')
+        response.delete_cookie("access")
+        response.delete_cookie("refresh")
         response.data = {"detail": "Logout successful"}
         response.status_code = status.HTTP_200_OK
         return response
