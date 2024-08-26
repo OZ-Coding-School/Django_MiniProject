@@ -64,7 +64,7 @@ class JWTLoginView(APIView):
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
-        serializer = LoginSerializer(data={"email": email, "password": password}, context={'request': request})
+        serializer = LoginSerializer(data={"email": email, "password": password})
 
         if serializer.is_valid():
             user = authenticate(
