@@ -14,7 +14,7 @@ try:
 # CI 용
 except FileNotFoundError:
     SECRET = {
-        "DJANGO_SECRET_KEY": ''.join(random.choices("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?", k=50)),
+        "DJANGO_SECRET_KEY": "".join(random.choices("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?", k=50)),
         "POSTGRES": {"HOST": "localhost", "USER": "postgres", "PASSWORD": "postgres", "NAME": "django", "PORT": 5432},
     }
 
