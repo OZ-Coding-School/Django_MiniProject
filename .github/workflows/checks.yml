@@ -6,6 +6,10 @@ on:
       - main
   pull_request:
 
+env:
+  EMAIL_USER: ${{ secrets.EMAIL_USER }}
+  EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
 jobs:
   ci:
     runs-on: ubuntu-latest
