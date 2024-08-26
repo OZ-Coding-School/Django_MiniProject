@@ -1,4 +1,5 @@
 import json
+import os
 import random
 from datetime import timedelta
 from pathlib import Path
@@ -13,7 +14,7 @@ try:
 # CI 용
 except FileNotFoundError:
     SECRET = {
-        "DJANGO_SECRET_KEY": random.choices("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?"),
+        "DJANGO_SECRET_KEY": "".join(random.choices("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?", k=50)),
         "POSTGRES": {"HOST": "localhost", "USER": "postgres", "PASSWORD": "postgres", "NAME": "django", "PORT": 5432},
     }
 
@@ -126,7 +127,11 @@ REST_FRAMEWORK = {
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.naver.com"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = SECRET["EMAIL"]["USER"]
-EMAIL_HOST_PASSWORD = SECRET["EMAIL"]["PASSWORD"]
+if SECRET.get("EMAIL"):
+    EMAIL_HOST_USER = SECRET["EMAIL"]["USER"]
+    EMAIL_HOST_PASSWORD = SECRET["EMAIL"]["PASSWORD"]
+else:
+    EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
