@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from django.urls import reverse
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
@@ -163,3 +164,11 @@ class UserViewTestCase(APITestCase):
         # 오류 메시지가 올바른지 확인
         self.assertIn('email', response.data)
         self.assertEqual(response.data['email'][0], 'user의 email은/는 이미 존재합니다.')
+
+    def test_token_refresh(self):
+        refresh_token = RefreshToken.for_user(self.user)
+
+        response = self.client.post(reverse('refresh'), data={"refresh": refresh_token})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('access', response.data)
