@@ -114,6 +114,31 @@ SIMPLE_JWT = {
     "TOKEN_USER_CLASS": "rest_framework_simplejwt.tokens.User",
 }
 
+# oauth
+if SECRET.get("KAKAO"):
+    KAKAO_CLIENT_ID = SECRET["KAKAO"]["CLIENT_ID"]
+    KAKAO_CLIENT_SECRET = SECRET["KAKAO"]["CLIENT_SECRET"]
+else:
+    KAKAO_CLIENT_ID = os.environ.get("KAKAO_CLIENT_ID")
+    KAKAO_CLIENT_SECRET = os.environ.get("KAKAO_CLIENT_SECRET")
+KAKAO_CALLBACK_URL = "/users/oauth/kakao/callback/"
+
+if SECRET.get("GOOGLE"):
+    GOOGLE_CLIENT_ID = SECRET["GOOGLE"]["CLIENT_ID"]
+    GOOGLE_CLIENT_SECRET = SECRET["GOOGLE"]["CLIENT_SECRET"]
+else:
+    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+GOOGLE_CALLBACK_URL = "/users/oauth/google/callback/"
+
+if SECRET.get("NAVER"):
+    NAVER_CLIENT_ID = SECRET["NAVER"]["CLIENT_ID"]
+    NAVER_CLIENT_SECRET = SECRET["NAVER"]["CLIENT_SECRET"]
+else:
+    NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID")
+    NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET")
+NAVER_CALLBACK_URL = "/users/oauth/naver/callback/"
+
 # REST FRAMEWORK
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
