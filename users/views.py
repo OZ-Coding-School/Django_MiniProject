@@ -1,4 +1,5 @@
 from abc import abstractmethod
+
 import requests
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
@@ -13,7 +14,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.mixins import KaKaoProviderInfoMixin, GoogleProviderInfoMixin, NaverProviderInfoMixin
+from users.mixins import (
+    GoogleProviderInfoMixin,
+    KaKaoProviderInfoMixin,
+    NaverProviderInfoMixin,
+)
 from users.serializers import LoginSerializer, SignupSerializer
 
 User = get_user_model()
@@ -121,7 +126,7 @@ class OAuthLoginView(APIView):
         return params
 
     def get_callback_url(self, provider_info):
-        domain = self.request.scheme + '://' + self.request.META.get('HTTP_HOST', '')
+        domain = self.request.scheme + "://" + self.request.META.get("HTTP_HOST", "")
         callback_url = domain + provider_info["callback_url"]
         return callback_url
 
@@ -242,4 +247,3 @@ class GoogleCallbackView(GoogleProviderInfoMixin, OAuthCallbackView):
 
 class NaverCallbackView(NaverProviderInfoMixin, OAuthCallbackView):
     pass
-

@@ -13,7 +13,7 @@ class KaKaoProviderInfoMixin:
             "email_field": "email",
             "nickname_field": "nickname",
             "profile_image_field": "profile_image_url",
-            "authorization_url": "https://kauth.kakao.com/oauth/authorize"
+            "authorization_url": "https://kauth.kakao.com/oauth/authorize",
         }
 
 
@@ -29,7 +29,7 @@ class GoogleProviderInfoMixin:
             "email_field": "email",
             "nickname_field": "name",
             "profile_image_field": "picture",
-            "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth"
+            "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth",
         }
 
 
