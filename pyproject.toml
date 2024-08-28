@@ -13,6 +13,7 @@ django-extensions = "^3.2.3"
 setuptools = "^72.2.0"
 psycopg2 = "^2.9.9"
 djangorestframework-simplejwt = "^5.3.1"
+requests = "^2.32.3"
 
 
 [tool.poetry.group.dev.dependencies]
