@@ -13,6 +13,18 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def create_oauth_user(self, email, nickname, **extra_fields):
+        extra_fields.setdefault("is_active", True)
+        if not email:
+            raise ValueError("The Email field must be set")
+        if not nickname:
+            nickname = email.split("@")[0]
+        email = self.normalize_email(email)
+        user = self.model(email=email, nickname=nickname, **extra_fields)
+        user.set_unusable_password()
+        user.save(using=self._db)
+        return user
+
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
