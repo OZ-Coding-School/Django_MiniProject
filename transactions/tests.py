@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -21,14 +22,14 @@ class TransactionTestCase(TestCase):
             phone="010-1111-2222",
         )
         self.account = Account.objects.create(
-            user_id=self.user.id, account_num="3333-54-1231231", bank_code="090", balance=1000000, type="입출금통장"
+            user_id=self.user.id, account_num="3333-54-1231231", bank_code="090", balance=1000000, type="입WITHDRAW통장"
         )
         self.transaction_data = {
             "account_id": self.account.id,
             "trans_amount": 18000,
             "print_content": "유튜브 정기결제",
-            "trans_type": "출금",
-            "trans_method": "자동이체",
+            "trans_type": "WITHDRAW",
+            "trans_method": "AUTOMATIC_TRANSFER",
             "trans_date": datetime.now().date(),
             "trans_time": datetime.now().time(),
         }
@@ -90,24 +91,25 @@ class TransactionViewTestCase(APITestCase):
             nickname="testuser",
             name="홍길동",
             phone="010-1111-2222",
+            is_active=True,
         )
         self.account = Account.objects.create(
             user_id=self.user.id,
             account_num="3333-54-1231231",
             bank_code="090",
             balance=1000000,
-            type="입출금"
+            type="CHECKING"
         )
         self.access_token = str(RefreshToken.for_user(self.user).access_token)
 
     def test_transaction_create_view(self):
-        url = reverse('transaction-create')
+        url = reverse('transaction-list')
         data = {
-            "account_id": self.account.id,
+            "account": self.account.id,
             "trans_amount": 18000,
             "print_content": "유튜브 구독 정기결제",
-            "trans_type": "출금",
-            "trans_method": "자동이체",
+            "trans_type": "WITHDRAW",
+            "trans_method": "AUTOMATIC_TRANSFER",
             "trans_date": datetime.now().date(),
             "trans_time": datetime.now().time(),
         }
@@ -116,22 +118,22 @@ class TransactionViewTestCase(APITestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Transaction.objects.count(), 1)
-        self.assertEqual(response.data["account"], data["account_id"])
+        self.assertEqual(response.data["account"], data["account"])
         self.assertEqual(response.data["trans_amount"], data["trans_amount"])
         self.assertEqual(response.data["print_content"], data["print_content"])
-        self.assertEqual(response.data["trans_type"], data["trans_type"])
-        self.assertEqual(response.data["trans_method"], data["trans_method"])
+        self.assertEqual(response.data["trans_type"], "출금")
+        self.assertEqual(response.data["trans_method"], "자동이체")
         self.assertEqual(response.data["trans_date"], data["trans_date"].strftime("%Y-%m-%d"))
-        self.assertEqual(response.data["trans_time"], data["trans_time"].strftime("%H:%M:%S"))
+        self.assertEqual(response.data["trans_time"].split(".")[0], data["trans_time"].strftime("%H:%M:%S"))
 
     def test_transaction_create_view_failed_by_negative_amount(self):
-        url = reverse('transaction-create')
+        url = reverse('transaction-list')
         data = {
-            "account_id": self.account.id,
+            "account": self.account.id,
             "trans_amount": -18000,
             "print_content": "유튜브 구독 정기결제",
-            "trans_type": "출금",
-            "trans_method": "자동이체",
+            "trans_type": "WITHDRAW",
+            "trans_method": "AUTOMATIC_TRANSFER",
             "trans_date": datetime.now().date(),
             "trans_time": datetime.now().time(),
         }
@@ -143,13 +145,13 @@ class TransactionViewTestCase(APITestCase):
         self.assertEqual(response.data["detail"], "거래금액은 원화 최소 단위인 10원보다 커야합니다.")
 
     def test_transaction_create_view_failed_by_amount_less_than_account_balance(self):
-        url = reverse('transaction-create')
+        url = reverse('transaction-list')
         data = {
-            "account_id": self.account.id,
+            "account": self.account.id,
             "trans_amount": 1118000,
             "print_content": "유튜브 구독 정기결제",
-            "trans_type": "출금",
-            "trans_method": "자동이체",
+            "trans_type": "WITHDRAW",
+            "trans_method": "AUTOMATIC_TRANSFER",
             "trans_date": datetime.now().date(),
             "trans_time": datetime.now().time(),
         }
@@ -175,9 +177,9 @@ class TransactionViewTestCase(APITestCase):
             Transaction.objects.create(
                 account_id=self.account.id,
                 trans_amount=random.randint(10000, 100000),
-                print_content=f"{i + 1}. 출금 Test",
-                trans_type="출금",
-                trans_method="자동이체",
+                print_content=f"{i + 1}. WITHDRAW Test",
+                trans_type="WITHDRAW",
+                trans_method="AUTOMATIC_TRANSFER",
                 trans_date=datetime.now() + timedelta(days=i),
                 trans_time=datetime.now().time(),
             )
@@ -185,17 +187,16 @@ class TransactionViewTestCase(APITestCase):
         response = self.client.get(url, headers={"Authorization": f"Bearer {self.access_token}"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 30)
-        self.assertEqual(response.data["deposit"][0]["print_content"], "30. 입금 Test")
-        self.assertEqual(response.data["withdraw"][0]["print_content"], "30. 출금 Test")
+        self.assertEqual(Transaction.objects.count(), 60)
+        self.assertEqual(len(response.data), 60)
 
     def test_transaction_detail_view(self):
         transaction = Transaction.objects.create(
             account_id=self.account.id,
             trans_amount=18000,
             print_content="유튜브 구독 정기결제",
-            trans_type="출금",
-            trans_method="자동이체",
+            trans_type="WITHDRAW",
+            trans_method="AUTOMATIC_TRANSFER",
             trans_date=datetime.now().date(),
             trans_time=datetime.now().time(),
         )
@@ -207,10 +208,10 @@ class TransactionViewTestCase(APITestCase):
         self.assertEqual(response.data["id"], transaction.id)
         self.assertEqual(response.data["trans_amount"], transaction.trans_amount)
         self.assertEqual(response.data["print_content"], transaction.print_content)
-        self.assertEqual(response.data["trans_type"], transaction.trans_type)
-        self.assertEqual(response.data["trans_method"], transaction.trans_method)
+        self.assertEqual(response.data["trans_type"], transaction.get_trans_type_display())
+        self.assertEqual(response.data["trans_method"], transaction.get_trans_method_display())
         self.assertEqual(response.data["trans_date"], transaction.trans_date.strftime("%Y-%m-%d"))
-        self.assertEqual(response.data["trans_time"], transaction.trans_time.strftime("%H:%M:%S"))
+        self.assertEqual(response.data["trans_time"].split(".")[0], transaction.trans_time.strftime("%H:%M:%S"))
         self.assertEqual(response.data["after_balance"], transaction.after_balance)
 
     def test_transaction_update_view(self):
@@ -218,8 +219,8 @@ class TransactionViewTestCase(APITestCase):
             account_id=self.account.id,
             trans_amount=18000,
             print_content="유튜브 구독 정기결제",
-            trans_type="출금",
-            trans_method="자동이체",
+            trans_type="WITHDRAW",
+            trans_method="AUTOMATIC_TRANSFER",
             trans_date=datetime.now().date(),
             trans_time=datetime.now().time(),
         )
@@ -229,7 +230,7 @@ class TransactionViewTestCase(APITestCase):
         url = reverse('transaction-detail', kwargs={'pk': transaction.id})
 
 
-        response = self.client.put(url, update_data, headers={"Authorization": f"Bearer {self.access_token}"})
+        response = self.client.patch(url, update_data, headers={"Authorization": f"Bearer {self.access_token}"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["trans_amount"], update_data["trans_amount"])
@@ -240,14 +241,14 @@ class TransactionViewTestCase(APITestCase):
             account_id=self.account.id,
             trans_amount=18000,
             print_content="유튜브 구독 정기결제",
-            trans_type="출금",
-            trans_method="자동이체",
+            trans_type="WITHDRAW",
+            trans_method="AUTOMATIC_TRANSFER",
             trans_date=datetime.now().date(),
             trans_time=datetime.now().time(),
         )
-        url = reverse('transaction-delete', kwargs={'pk': transaction.id})
+        url = reverse('transaction-detail', kwargs={'pk': transaction.id})
 
-        response = self.client.put(url,headers={"Authorization": f"Bearer {self.access_token}"})
+        response = self.client.delete(url, headers={"Authorization": f"Bearer {self.access_token}"})
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(response.data["detail"], "거래내역이 성공적으로 삭제되었습니다.")
