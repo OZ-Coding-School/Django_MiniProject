@@ -3,7 +3,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.response import Response
 
 from transactions.models import Transaction
-from transactions.serializers import TransactionSerializer, TransactionDetailSerializer
+from transactions.serializers import TransactionDetailSerializer, TransactionSerializer
 
 
 class TransactionListCreateView(ListCreateAPIView):
@@ -12,10 +12,10 @@ class TransactionListCreateView(ListCreateAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        date = self.request.query_params.get('date', '')
+        date = self.request.query_params.get("date", "")
         if date:
             queryset = queryset.filter(trans_date=date)
-        trans_type = self.request.query_params.get('trans_type', '')
+        trans_type = self.request.query_params.get("trans_type", "")
         if trans_type:
             queryset = queryset.filter(trans_type=trans_type)
         return queryset
@@ -34,7 +34,5 @@ class TransactionDetailView(RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         response = super().delete(request, *args, **kwargs)
-        response.data = {
-            "detail": "거래내역이 성공적으로 삭제되었습니다."
-        }
+        response.data = {"detail": "거래내역이 성공적으로 삭제되었습니다."}
         return response

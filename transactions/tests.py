@@ -94,16 +94,12 @@ class TransactionViewTestCase(APITestCase):
             is_active=True,
         )
         self.account = Account.objects.create(
-            user_id=self.user.id,
-            account_num="3333-54-1231231",
-            bank_code="090",
-            balance=1000000,
-            type="CHECKING"
+            user_id=self.user.id, account_num="3333-54-1231231", bank_code="090", balance=1000000, type="CHECKING"
         )
         self.access_token = str(RefreshToken.for_user(self.user).access_token)
 
     def test_transaction_create_view(self):
-        url = reverse('transaction-list')
+        url = reverse("transaction-list")
         data = {
             "account": self.account.id,
             "trans_amount": 18000,
@@ -127,7 +123,7 @@ class TransactionViewTestCase(APITestCase):
         self.assertEqual(response.data["trans_time"].split(".")[0], data["trans_time"].strftime("%H:%M:%S"))
 
     def test_transaction_create_view_failed_by_negative_amount(self):
-        url = reverse('transaction-list')
+        url = reverse("transaction-list")
         data = {
             "account": self.account.id,
             "trans_amount": -18000,
@@ -145,7 +141,7 @@ class TransactionViewTestCase(APITestCase):
         self.assertEqual(response.data["detail"], "거래금액은 원화 최소 단위인 10원보다 커야합니다.")
 
     def test_transaction_create_view_failed_by_amount_less_than_account_balance(self):
-        url = reverse('transaction-list')
+        url = reverse("transaction-list")
         data = {
             "account": self.account.id,
             "trans_amount": 1118000,
@@ -163,7 +159,7 @@ class TransactionViewTestCase(APITestCase):
         self.assertEqual(response.data["detail"], "계좌 잔액보다 큰 금액은 출금할 수 없습니다.")
 
     def test_transaction_list_view(self):
-        url = reverse('transaction-list')
+        url = reverse("transaction-list")
         for i in range(30):
             Transaction.objects.create(
                 account_id=self.account.id,
@@ -200,7 +196,7 @@ class TransactionViewTestCase(APITestCase):
             trans_date=datetime.now().date(),
             trans_time=datetime.now().time(),
         )
-        url = reverse('transaction-detail', kwargs={'pk': transaction.id})
+        url = reverse("transaction-detail", kwargs={"pk": transaction.id})
 
         response = self.client.get(url, headers={"Authorization": f"Bearer {self.access_token}"})
 
@@ -227,8 +223,7 @@ class TransactionViewTestCase(APITestCase):
         update_data = {
             "trans_amount": 20000,
         }
-        url = reverse('transaction-detail', kwargs={'pk': transaction.id})
-
+        url = reverse("transaction-detail", kwargs={"pk": transaction.id})
 
         response = self.client.patch(url, update_data, headers={"Authorization": f"Bearer {self.access_token}"})
 
@@ -246,7 +241,7 @@ class TransactionViewTestCase(APITestCase):
             trans_date=datetime.now().date(),
             trans_time=datetime.now().time(),
         )
-        url = reverse('transaction-detail', kwargs={'pk': transaction.id})
+        url = reverse("transaction-detail", kwargs={"pk": transaction.id})
 
         response = self.client.delete(url, headers={"Authorization": f"Bearer {self.access_token}"})
 
