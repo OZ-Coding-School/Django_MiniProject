@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -7,6 +8,7 @@ from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import Account
+from transactions.models import Transaction
 
 
 class AccountModelTestCases(TestCase):
@@ -87,12 +89,12 @@ class AccountViewTestCase(APITestCase):
         self.access_token = str(RefreshToken.for_user(self.user).access_token)
 
     def test_account_create_view(self):
-        url = reverse("account-create")
+        url = reverse("account-list")
         data = {
             "account_num": "3333-54-1231231",
             "bank_code": "090",
             "balance": 1000000,
-            "type": "입출금",
+            "type": "CHECKING",
         }
 
         response = self.client.post(url, data, headers={"Authorization": f"Bearer {self.access_token}"})
@@ -100,10 +102,10 @@ class AccountViewTestCase(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Account.objects.count(), 1)
         self.assertEqual(response.data["user"], self.user.id)
-        self.assertEqual(response.data["account_num"], data["account_num"])
+        self.assertEqual(response.data["account_num"], "3333-54-*******")
         self.assertEqual(response.data["bank_code"], data["bank_code"])
         self.assertEqual(response.data["balance"], data["balance"])
-        self.assertEqual(response.data["type"], data["type"])
+        self.assertEqual(response.data["type"], "입출금")
 
     def test_account_list_view(self):
         for i in range(5):
@@ -112,7 +114,7 @@ class AccountViewTestCase(APITestCase):
                 account_num=f"3333-54-123123{i}",
                 bank_code="090",
                 balance=random.randint(100000, 999999999),
-                type="입출금",
+                type="CHECKING",
             )
         url = reverse("account-list")
 
@@ -122,11 +124,7 @@ class AccountViewTestCase(APITestCase):
         self.assertEqual(Account.objects.count(), 5)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data[0]["user"], self.user.id)
-        self.assertEqual(response.data[0]["account_num"], "3333-54-1231230")
-        self.assertEqual(response.data[1]["account_num"], "3333-54-1231231")
-        self.assertEqual(response.data[2]["account_num"], "3333-54-1231232")
-        self.assertEqual(response.data[3]["account_num"], "3333-54-1231233")
-        self.assertEqual(response.data[4]["account_num"], "3333-54-1231234")
+        self.assertEqual(response.data[0]["account_num"], "3333-54-*******")
 
     def test_account_detail_view(self):
         account = Account.objects.create(
@@ -134,7 +132,7 @@ class AccountViewTestCase(APITestCase):
             account_num="3333-54-1231231",
             bank_code="090",
             balance=1000000,
-            type="입출금",
+            type="CHECKING",
         )
         url = reverse("account-detail", kwargs={"pk": account.id})
 
@@ -142,10 +140,11 @@ class AccountViewTestCase(APITestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["user"], account.user_id)
-        self.assertEqual(response.data["account_num"], account.account_num)
+        self.assertEqual(response.data["account_num"], account.masking_account_num())
         self.assertEqual(response.data["bank_code"], account.bank_code)
+        self.assertEqual(response.data["bank_name"], account.get_bank_code_display())
         self.assertEqual(response.data["balance"], account.balance)
-        self.assertEqual(response.data["type"], account.type)
+        self.assertEqual(response.data["type"], account.get_type_display())
         self.assertEqual(len(response.data["transactions"]), account.transactions.count())
 
     def test_account_update_view(self):
@@ -154,7 +153,7 @@ class AccountViewTestCase(APITestCase):
             account_num="3333-54-1231231",
             bank_code="090",
             balance=1000000,
-            type="입출금",
+            type="CHECKING",
         )
         url = reverse("account-detail", kwargs={"pk": account.id})
         data = {
@@ -173,9 +172,9 @@ class AccountViewTestCase(APITestCase):
             account_num="3333-54-1231231",
             bank_code="090",
             balance=1000000,
-            type="입출금",
+            type="CHECKING",
         )
-        url = reverse("account-delete", kwargs={"pk": account.id})
+        url = reverse("account-detail", kwargs={"pk": account.id})
 
         response = self.client.delete(url, headers={"Authorization": f"Bearer {self.access_token}"})
 
