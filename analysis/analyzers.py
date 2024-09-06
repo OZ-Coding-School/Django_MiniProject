@@ -140,7 +140,7 @@ class SpendingAnalyzer(DateUtils):
         # 이미지 파일을 static 경로에 저장
         today = self.today.strftime("%Y-%m-%d")
         static_dir = os.path.join(
-            settings.BASE_DIR, 'static', f'analysis/total_spending/{today}'
+            settings.BASE_DIR, 'media', f'analysis/total_spending/{today}'
         )
         os.makedirs(static_dir, exist_ok=True)
 
