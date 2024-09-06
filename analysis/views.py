@@ -1,4 +1,5 @@
 from rest_framework.generics import ListAPIView
+
 from analysis.models import Analysis
 from analysis.serializers import AnalysisSerializer
 

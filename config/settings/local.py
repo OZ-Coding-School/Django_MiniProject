@@ -11,13 +11,13 @@ INSTALLED_APPS += [
 ]
 
 # Static
-STATIC_URL = 'static/'
-STATIC_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / '.static_root'
+STATIC_URL = "static/"
+STATIC_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / ".static_root"
 
 # Media
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Database
 DATABASES = {
@@ -32,12 +32,12 @@ DATABASES = {
 }
 CELERY_BEAT_SCHEDULE = {
     # 작업 스케줄
-    'weekly-analyze-and-notify': {
-        'task': 'analysis.tasks.weekly_analyze_and_notify_user',
-        'schedule': crontab(),
+    "weekly-analyze-and-notify": {
+        "task": "analysis.tasks.weekly_analyze_and_notify_user",
+        "schedule": crontab(),
     },
-    'monthly-analyze-and-notify': {
-        'task': 'analysis.tasks.monthly_analyze_and_notify_user',
-        'schedule': crontab(),
+    "monthly-analyze-and-notify": {
+        "task": "analysis.tasks.monthly_analyze_and_notify_user",
+        "schedule": crontab(),
     },
 }

@@ -166,10 +166,10 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Celery 설정
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # 데이터베이스를 브로커로 사용
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # 작업 결과를 데이터베이스에 저장
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-CELERY_TIMEZONE = 'Asia/Seoul'
+CELERY_BROKER_URL = "redis://localhost:6379/0"  # 데이터베이스를 브로커로 사용
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"  # 작업 결과를 데이터베이스에 저장
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_TIMEZONE = "Asia/Seoul"

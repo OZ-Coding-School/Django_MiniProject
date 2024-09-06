@@ -1,4 +1,5 @@
 from rest_framework.generics import ListAPIView, UpdateAPIView
+
 from notifications.models import Notification
 from notifications.serializers import NotificationSerializer
 

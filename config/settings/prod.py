@@ -23,12 +23,12 @@ DATABASES = {
 
 CELERY_BEAT_SCHEDULE = {
     # 작업 스케줄
-    'weekly-analyze-and-notify': {
-        'task': 'analysis.tasks.weekly_analyze_and_notify_user',
-        'schedule': crontab(day_of_week=""),
+    "weekly-analyze-and-notify": {
+        "task": "analysis.tasks.weekly_analyze_and_notify_user",
+        "schedule": crontab(day_of_week=""),
     },
-    'monthly-analyze-and-notify': {
-        'task': 'analysis.tasks.monthly_analyze_and_notify_user',
-        'schedule': crontab(day_of_month="1"),
+    "monthly-analyze-and-notify": {
+        "task": "analysis.tasks.monthly_analyze_and_notify_user",
+        "schedule": crontab(day_of_month="1"),
     },
 }

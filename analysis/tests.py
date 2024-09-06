@@ -1,8 +1,8 @@
 import random
 from datetime import datetime, timedelta
 
-from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
@@ -55,8 +55,8 @@ class SpendingAnalyzerTestCase(TestCase):
 
         # Analysis 객체가 생성되었는지 확인
         self.assertTrue(
-            Analysis.objects.filter(user=self.user, about="TOTAL_SPENDING", type='WEEKLY').exists(),
-            "Weekly spending analysis was not saved in the database."
+            Analysis.objects.filter(user=self.user, about="TOTAL_SPENDING", type="WEEKLY").exists(),
+            "Weekly spending analysis was not saved in the database.",
         )
 
     def test_make_matplot_monthly_spending(self):
@@ -83,8 +83,8 @@ class SpendingAnalyzerTestCase(TestCase):
 
         # Analysis 객체가 생성되었는지 확인
         self.assertTrue(
-            Analysis.objects.filter(user=self.user, about="TOTAL_SPENDING", type='MONTHLY').exists(),
-            "Monthly spending analysis was not saved in the database."
+            Analysis.objects.filter(user=self.user, about="TOTAL_SPENDING", type="MONTHLY").exists(),
+            "Monthly spending analysis was not saved in the database.",
         )
 
 
@@ -105,17 +105,16 @@ class AnalysisAPIViewTestCase(APITestCase):
             Analysis.objects.create(
                 user=self.user,
                 about="TOTAL_SPENDING",
-                type='WEEKLY',
+                type="WEEKLY",
                 period_start=datetime.today(),
                 period_end=datetime.today() + timedelta(days=8),
                 description=f"test Analysis {i + 1}",
                 created_at=datetime.today(),
                 updated_at=datetime.today(),
             )
-        response = self.client.get(reverse('analysis'))
+        response = self.client.get(reverse("analysis"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 10)
-        self.assertEqual(response.data[0]['description'], "test Analysis 1")
-        self.assertEqual(response.data[9]['description'], "test Analysis 10")
-
+        self.assertEqual(response.data[0]["description"], "test Analysis 1")
+        self.assertEqual(response.data[9]["description"], "test Analysis 10")

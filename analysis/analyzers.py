@@ -1,6 +1,7 @@
 import os
-import matplotlib.pyplot as plt
+
 import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from django.conf import settings
@@ -12,7 +13,7 @@ from transactions.models import Transaction
 
 User = get_user_model()
 
-plt.rcParams['font.family'] = "AppleGothic"
+plt.rcParams["font.family"] = "AppleGothic"
 
 
 class SpendingAnalyzer(DateUtils):
@@ -22,30 +23,22 @@ class SpendingAnalyzer(DateUtils):
         self.queryset = Transaction.objects.filter(account__user=self.user, trans_type="WITHDRAW")
 
     def get_this_week_transactions(self):
-        return self.queryset.filter(
-            trans_date__range=[self.get_this_week_start(), self.get_this_week_end()]
-        )
+        return self.queryset.filter(trans_date__range=[self.get_this_week_start(), self.get_this_week_end()])
 
     def get_last_week_transactions(self):
-        return self.queryset.filter(
-            trans_date__range=[self.get_last_week_start(), self.get_last_week_end()]
-        )
+        return self.queryset.filter(trans_date__range=[self.get_last_week_start(), self.get_last_week_end()])
 
     def get_this_month_transactions(self):
-        return self.queryset.filter(
-            trans_date__range=[self.get_this_month_start(), self.get_this_month_end()]
-        )
+        return self.queryset.filter(trans_date__range=[self.get_this_month_start(), self.get_this_month_end()])
 
     def get_last_month_transactions(self):
-        return self.queryset.filter(
-            trans_date__range=[self.get_last_month_start(), self.get_last_month_end()]
-        )
+        return self.queryset.filter(trans_date__range=[self.get_last_month_start(), self.get_last_month_end()])
 
     def analyze_total_spending(self, transactions):
         # DataFrame으로 변환하여 분석
-        transactions_df = pd.DataFrame(list(transactions.values('trans_date', 'trans_amount', 'trans_type')))
+        transactions_df = pd.DataFrame(list(transactions.values("trans_date", "trans_amount", "trans_type")))
         # 소비 분석
-        spending_analysis = transactions_df.groupby('trans_type')['trans_amount'].sum()
+        spending_analysis = transactions_df.groupby("trans_type")["trans_amount"].sum()
 
         return spending_analysis
 
@@ -68,13 +61,13 @@ class SpendingAnalyzer(DateUtils):
         width = 0.4  # 막대 너비
 
         # 막대 그래프 그리기
-        ax.bar(x - width / 2, this_week_values, width, color='green', alpha=0.7, label='이번 주')
-        ax.bar(x + width / 2, last_week_values, width, color='red', alpha=0.7, label='지난 주')
+        ax.bar(x - width / 2, this_week_values, width, color="green", alpha=0.7, label="이번 주")
+        ax.bar(x + width / 2, last_week_values, width, color="red", alpha=0.7, label="지난 주")
 
         # 그래프 레이블 및 제목 설정
-        ax.set_ylabel('지출 금액')
-        ax.set_xlabel('주간별')
-        ax.set_title('지난 주 - 이번 주 주간 총 지출금액 비교')
+        ax.set_ylabel("지출 금액")
+        ax.set_xlabel("주간별")
+        ax.set_title("지난 주 - 이번 주 주간 총 지출금액 비교")
         ax.set_xticks(x)
         ax.legend()
 
@@ -88,8 +81,8 @@ class SpendingAnalyzer(DateUtils):
             period_start=self.get_last_week_start(),
             period_end=self.get_this_week_end(),
             about="TOTAL_SPENDING",
-            type='WEEKLY',
-            result_image=plot_image
+            type="WEEKLY",
+            result_image=plot_image,
         )
 
     def make_matplot_monthly_spending(self):
@@ -112,13 +105,13 @@ class SpendingAnalyzer(DateUtils):
         width = 0.4  # 막대 너비
 
         # 막대 그래프 그리기
-        ax.bar(x - width / 2, this_month_values, width, color='green', alpha=0.7, label='이번 달')
-        ax.bar(x + width / 2, last_month_values, width, color='red', alpha=0.7, label='지난 달')
+        ax.bar(x - width / 2, this_month_values, width, color="green", alpha=0.7, label="이번 달")
+        ax.bar(x + width / 2, last_month_values, width, color="red", alpha=0.7, label="지난 달")
 
         # 그래프 레이블 및 제목 설정
-        ax.set_ylabel('지출 금액')
-        ax.set_xlabel('월별')
-        ax.set_title('저번 달 - 이번 달 월간 총 지출금액 비교')
+        ax.set_ylabel("지출 금액")
+        ax.set_xlabel("월별")
+        ax.set_title("저번 달 - 이번 달 월간 총 지출금액 비교")
         ax.set_xticks(x)
         ax.legend()
 
@@ -132,19 +125,17 @@ class SpendingAnalyzer(DateUtils):
             about="TOTAL_SPENDING",
             period_start=self.get_last_month_start(),
             period_end=self.get_this_month_end(),
-            type='MONTHLY',
-            result_image=plot_image
+            type="MONTHLY",
+            result_image=plot_image,
         )
 
     def save_plot_image(self, plot, prefix):
         # 이미지 파일을 static 경로에 저장
         today = self.today.strftime("%Y-%m-%d")
-        static_dir = os.path.join(
-            settings.BASE_DIR, 'media', f'analysis/total_spending/{today}'
-        )
+        static_dir = os.path.join(settings.BASE_DIR, "media", f"analysis/total_spending/{today}")
         os.makedirs(static_dir, exist_ok=True)
 
-        filename = f'{prefix}_total_spending_{self.user.id}.png'
+        filename = f"{prefix}_total_spending_{self.user.id}.png"
         filepath = os.path.join(static_dir, filename)
         plot.savefig(filepath)
 

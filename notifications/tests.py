@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -24,7 +25,7 @@ class SignalTestCase(TestCase):
         Analysis.objects.create(
             user=self.user,
             about="TOTAL_SPENDING",
-            type='WEEKLY',
+            type="WEEKLY",
             period_start=datetime.today(),
             period_end=datetime.today() + timedelta(days=1),
             description="test Analysis",
@@ -39,7 +40,7 @@ class SignalTestCase(TestCase):
         analysis = Analysis.objects.create(
             user=self.user,
             about="TOTAL_SPENDING",
-            type='WEEKLY',
+            type="WEEKLY",
             period_start=datetime.today(),
             period_end=datetime.today() + timedelta(days=1),
             description="test Analysis",
@@ -83,7 +84,7 @@ class NotificationAPIViewTestCase(APITestCase):
     def test_notification_read_view(self):
         response = self.client.patch(
             reverse("notification-read", kwargs={"pk": self.notification.pk}),
-            headers={"Authorization": f"Bearer {self.access}"}
+            headers={"Authorization": f"Bearer {self.access}"},
         )
 
         self.assertEqual(response.status_code, 200)

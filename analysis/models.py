@@ -1,16 +1,16 @@
 from django.db import models
 
-from config.constants import ANALYSIS_TYPES, ANALYSIS_ABOUT
+from config.constants import ANALYSIS_ABOUT, ANALYSIS_TYPES
 
 
 class Analysis(models.Model):
-    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     about = models.CharField(choices=ANALYSIS_ABOUT, max_length=20)  # 수입에 대한 분석인지, 지출에 대한 분석인지
     type = models.CharField(choices=ANALYSIS_TYPES, max_length=7)  # 일간, 주간, 월간, 연간
     period_start = models.DateField()
     period_end = models.DateField()
     description = models.TextField()
-    result_image = models.ImageField(upload_to='analysis/', null=True, blank=True, max_length=255)
+    result_image = models.ImageField(upload_to="analysis/", null=True, blank=True, max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
