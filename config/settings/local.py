@@ -21,3 +21,14 @@ DATABASES = {
         "PORT": 5432,
     }
 }
+CELERY_BEAT_SCHEDULE = {
+    # 작업 스케줄
+    'weekly-analyze-and-notify': {
+        'task': 'analysis.tasks.weekly_analyze_and_notify_user',
+        'schedule': crontab(),
+    },
+    'monthly-analyze-and-notify': {
+        'task': 'analysis.tasks.monthly_analyze_and_notify_user',
+        'schedule': crontab(),
+    },
+}
