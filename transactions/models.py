@@ -39,6 +39,8 @@ class Transaction(models.Model):
             self.after_balance = self.account.balance + self.trans_amount
         elif trans_type == "출금":
             self.after_balance = self.account.balance - self.trans_amount
+        self.account.balance = self.after_balance
+        self.account.save()
 
     def save(self, *args, **kwargs):
         """

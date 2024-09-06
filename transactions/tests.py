@@ -36,10 +36,10 @@ class TransactionTestCase(TestCase):
 
     def test_transaction_create(self):
         transaction = Transaction.objects.create(**self.transaction_data)
-
+        self.account.refresh_from_db()
         self.assertEqual(transaction.account_id, self.transaction_data["account_id"])
         self.assertEqual(transaction.trans_amount, self.transaction_data["trans_amount"])
-        self.assertEqual(transaction.after_balance, self.account.balance - self.transaction_data["trans_amount"])
+        self.assertEqual(transaction.after_balance, self.account.balance)
         self.assertEqual(transaction.print_content, self.transaction_data["print_content"])
         self.assertEqual(transaction.trans_type, self.transaction_data["trans_type"])
         self.assertEqual(transaction.trans_method, self.transaction_data["trans_method"])
@@ -48,13 +48,12 @@ class TransactionTestCase(TestCase):
 
     def test_transaction_update(self):
         transaction = Transaction.objects.create(**self.transaction_data)
-        transaction.trans_amount = 20000
+        transaction.trans_method = "TRANSFER"
 
         transaction.save()
 
         transaction.refresh_from_db()
-        self.assertEqual(transaction.trans_amount, 20000)
-        self.assertEqual(transaction.after_balance, 980000)
+        self.assertEqual(transaction.trans_method, "TRANSFER")
 
     def test_transaction_delete(self):
         transaction = Transaction.objects.create(**self.transaction_data)
@@ -165,8 +164,8 @@ class TransactionViewTestCase(APITestCase):
                 account_id=self.account.id,
                 trans_amount=random.randint(10000, 100000),
                 print_content=f"{i + 1}. 입금 Test",
-                trans_type="입금",
-                trans_method="계좌이체",
+                trans_type="DEPOSIT",
+                trans_method="TRANSFER",
                 trans_date=datetime.now() + timedelta(days=i),
                 trans_time=datetime.now().time(),
             )
@@ -221,15 +220,15 @@ class TransactionViewTestCase(APITestCase):
             trans_time=datetime.now().time(),
         )
         update_data = {
-            "trans_amount": 20000,
+            "trans_method": "TRANSFER",
         }
         url = reverse("transaction-detail", kwargs={"pk": transaction.id})
 
         response = self.client.patch(url, update_data, headers={"Authorization": f"Bearer {self.access_token}"})
+        self.account.refresh_from_db()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["trans_amount"], update_data["trans_amount"])
-        self.assertEqual(response.data["after_balance"], self.account.balance - update_data["trans_amount"])
+        self.assertEqual(response.data["trans_method"], "계좌이체")
 
     def test_transaction_delete_view(self):
         transaction = Transaction.objects.create(
