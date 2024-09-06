@@ -4,6 +4,8 @@ import random
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # 환경변수 가져오기
@@ -35,12 +37,17 @@ CUSTOM_APPS = [
     "users",
     "accounts",
     "transactions",
+    "analysis",
+    "notifications",
     "core",
 ]
 
 THIRD_PARTY_APPS = [
     "django_extensions",
     "rest_framework",
+    "celery",
+    "django_celery_beat",
+    "django_celery_results",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + CUSTOM_APPS + THIRD_PARTY_APPS
@@ -94,9 +101,6 @@ LANGUAGE_CODE = "ko-kr"
 TIME_ZONE = "Asia/Seoul"
 USE_I18N = True
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = "static/"
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -160,3 +164,12 @@ else:
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Celery 설정
+CELERY_BROKER_URL = "redis://localhost:6379/0"  # 데이터베이스를 브로커로 사용
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"  # 작업 결과를 데이터베이스에 저장
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_TIMEZONE = "Asia/Seoul"

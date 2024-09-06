@@ -118,3 +118,16 @@ TRANSACTION_METHOD = [
     ("CARD", "카드결제"),
     ("INTEREST", "이자"),
 ]
+
+# 소비, 지출 분석 타입
+ANALYSIS_TYPES = [
+    ("DAILY", "일간"),
+    ("WEEKLY", "주간"),
+    ("MONTHLY", "월간"),
+    ("YEARLY", "연간"),
+]
+
+ANALYSIS_ABOUT = [
+    ("TOTAL_SPENDING", "총 지출"),
+    ("TOTAL_INCOME", "총 수입"),
+]
