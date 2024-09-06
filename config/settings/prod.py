@@ -6,6 +6,9 @@ ALLOWED_HOSTS = []
 
 ROOT_URLCONF = "config.urls"
 
+# Static & Media
+# Todo : S3를 이용하기
+
 # Database
 DATABASES = {
     "default": {
